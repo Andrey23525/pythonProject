@@ -1,6 +1,8 @@
 import json
+from random import choice
 from requests import get
 import pandas, time, random
+from datetime import datetime
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -8,9 +10,14 @@ def wait(start, end):
     random.seed(time.time())
     time.sleep(random.randint(start, end))
 
-
 tables = []
-for i in range(1, 34):
+indexs = [int(n) for n in range(1, 34)]
+
+for j in range(1, 34):
+    ts = time.time()
+    i = choice(indexs)
+    indexs.remove(i)
+
     try:
         downloadUrl = ""
         wait(1, 10)
@@ -31,7 +38,8 @@ for i in range(1, 34):
             tables.append(t[0])
     except ValueError:
         continue
-    print(i)
+    print(f"[{datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')}]", str(round((1 - len(indexs)/33)*100)), '%')
 res = pandas.concat(tables).drop_duplicates().reset_index(drop=True)
-res.to_csv("/home/slavt/PycharmProjects/postPythonProject/res.csv")
+res.to_csv("res.csv")
+# res.to_csv("../postPythonProject/res.csv")
 print("OK")
